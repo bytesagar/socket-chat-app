@@ -10,7 +10,7 @@ const server = http.createServer(app)
 const io = socketIo(server)
 
 
-const publicDirPath = path.join(__dirname, "../public")
+const publicDirPath = path.join(__dirname, "public")
 app.use(express.static(publicDirPath))
 
 
