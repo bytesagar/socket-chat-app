@@ -3,24 +3,41 @@ const path = require("path")
 const http = require("http")
 const socketIo = require("socket.io")
 const { getMessage, generateLocation } = require("./utils/messages")
+const connetToDB = require("./Database/dbConfig")
 
 
 const app = express()
 const server = http.createServer(app)
 const io = socketIo(server)
+connetToDB()
 
 
-const publicDirPath = path.join(__dirname, "public")
-app.use(express.static(publicDirPath))
+app.use(express.static(__dirname + "/public"))
 
+app.set("view engine", 'ejs')
+app.use(express.urlencoded({ extended: false }))
 
+app.get("/", (req, res, next) => {
+    res.render("index")
+    next()
+})
+app.get("/chat", (req, res) => {
+    res.render("chat")
+})
 io.on("connection", (socket) => {
     console.log("New web connection")
 
-    socket.emit("message", getMessage("Welcome"))
-    socket.broadcast.emit("message", getMessage("A new user has joined"))
+    socket.on("join", ({ username, room }) => {
+        socket.join(room)
+
+        socket.emit("message", getMessage(`Welcome To Chat Room`))
+        socket.broadcast.to(room).emit("message", getMessage(`${username} has joined.`))
+
+
+    })
     socket.on("sendMessage", (message, callback) => {
-        io.emit("message", getMessage(message))
+
+        io.to('sagar').emit("message", getMessage(message))
         callback("Delivered")
     })
     socket.on("sendLocation", (location, callback) => {
@@ -44,7 +61,7 @@ io.on("connection", (socket) => {
 
 
 
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 server.listen(PORT, () => {
     console.log("Server started")
 })
