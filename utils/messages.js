@@ -1,14 +1,10 @@
-const getMessage = (text) => {
+const getMessage = (username, text) => {
     return {
+        username,
         text,
         createdAt: new Date().getTime()
     }
 }
-const generateLocation = (url) => {
-    return {
-        url,
-        createdAt: new Date().getTime()
-    }
-}
 
-module.exports = { getMessage, generateLocation }
+
+module.exports = getMessage 

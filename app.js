@@ -1,15 +1,21 @@
 const express = require("express")
 const path = require("path")
 const http = require("http")
+const session = require("express-session")
+const bcrypt = require("bcrypt")
 const socketIo = require("socket.io")
-const { getMessage, generateLocation } = require("./utils/messages")
-const connetToDB = require("./Database/dbConfig")
+const flash = require("connect-flash")
+const getMessage = require("./utils/messages")
+const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users")
+const { Socket } = require("net")
+
+
 
 
 const app = express()
 const server = http.createServer(app)
 const io = socketIo(server)
-connetToDB()
+
 
 
 app.use(express.static(__dirname + "/public"))
@@ -17,41 +23,61 @@ app.use(express.static(__dirname + "/public"))
 app.set("view engine", 'ejs')
 app.use(express.urlencoded({ extended: false }))
 
-app.get("/", (req, res, next) => {
+
+
+
+app.get("/", (req, res) => {
     res.render("index")
-    next()
 })
+
 app.get("/chat", (req, res) => {
     res.render("chat")
 })
+
 io.on("connection", (socket) => {
-    console.log("New web connection")
+    console.log("User connected")
 
-    socket.on("join", ({ username, room }) => {
-        socket.join(room)
+    socket.on('join', ({ username, room }, callback) => {
+        const { error, user } = addUser({ id: socket.id, username, room })
+        if (error) {
+            return callback(error)
+        }
 
-        socket.emit("message", getMessage(`Welcome To Chat Room`))
-        socket.broadcast.to(room).emit("message", getMessage(`${username} has joined.`))
+        socket.join(user.room)
 
+        socket.emit('message', getMessage('Admin', "Welcome"))
 
-    })
-    socket.on("sendMessage", (message, callback) => {
+        socket.broadcast.to(user.room).emit('message', getMessage('Admin', `${user.username} has joined the room`))
 
-        io.to('sagar').emit("message", getMessage(message))
-        callback("Delivered")
-    })
-    socket.on("sendLocation", (location, callback) => {
-        socket.broadcast.emit("locationMessage", generateLocation(`https://google.com/maps?q=${location.latitude},${location.longitude}`))
+        io.to(user.room).emit('roomData', {
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        })
         callback()
-        // io.emit("message", location)
     })
+    //receive message
+    socket.on('send-message', (message, callback) => {
+        const user = getUser(socket.id)
+        io.to(user.room).emit('message', getMessage(user.username, message))
+        callback('Delivered')
+    })
+
+
+
+    //on disconnect
     socket.on("disconnect", () => {
-        io.emit("message", getMessage("A user has left"))
+        const user = removeUser(socket.id)
+        console.log(user)
+        if (user) {
+            socket.to(user.room).emit('notification', getMessage('Admin', `${user.username} left the room!`))
+            io.to(user.room).emit('roomData', {
+                room: user.room,
+                users: getUsersInRoom(user.room)
+            })
+            io.to(user.room).emit('message', getMessage('Admin', `${user.username} has left!`))
+        }
     })
-
 })
-
-
 
 
 
