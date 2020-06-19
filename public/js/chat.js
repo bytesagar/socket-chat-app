@@ -8,6 +8,11 @@ const $messageFormButton = document.querySelector("#message-form button")
 const $messages = document.querySelector("#messages")
 const $room = document.querySelector(".roomname")
 const $users = document.querySelector(".users")
+$typing = document.querySelector("#feedback")
+
+
+
+
 
 
 
@@ -49,12 +54,10 @@ socket.on("message", (message) => {
     const markup = `
     <div class="chat">
     <p class="username" style="margin-bottom: 3px; text-transform: capitalize; font-size: 13px; font-weight: bold">${html.username} - <span>${html.createdAt}</span></p>
-
     <p id="message" class=${html.username === username ? 'message' : 'newuser'} style="margin-bottom: 0px">${html.message}</p>
     </div>
     `
     $messages.insertAdjacentHTML('beforeend', markup)
-
 
     autoScroll()
 
@@ -88,6 +91,23 @@ $messageForm.addEventListener('submit', (e) => {
         }
     })
 })
+
+// //Emit typing
+// $messageFormInput.addEventListener("keypress", e => {
+//     let keycode = (e.keyCode ? e.keyCode : e.which);
+//     if (keycode != '13') {
+//         socket.emit('typing', username)
+//     }
+// });
+
+// //Listen on typing
+// socket.on('typing', (data) => {
+//     const $chat = document.querySelector("#typing")
+//     console.log(data)
+//     const html = `<p><i> ${data}  is typing a message...</i></p>`
+//     $chat.innerHTML = html
+
+// });
 
 socket.emit('join', { username, room }, (error) => {
     if (error) {

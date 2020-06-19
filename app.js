@@ -63,6 +63,10 @@ io.on("connection", (socket) => {
     })
 
 
+    //listen on typing
+    // socket.on('typing', data => {
+    //     socket.broadcast.emit('typing', data)
+    // })
 
     //on disconnect
     socket.on("disconnect", () => {
