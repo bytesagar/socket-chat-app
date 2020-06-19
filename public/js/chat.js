@@ -10,27 +10,57 @@ const $room = document.querySelector(".roomname")
 const $users = document.querySelector(".users")
 
 
+
 //options
 
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
-console.log(username)
 
+const autoScroll = () => {
+    const $newMessage = $messages.lastElementChild
+    const newMessageStyles = getComputedStyle($newMessage)
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom)
+
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
+
+    //visible height
+    const visibleHeight = $messages.offsetHeight
+
+    //height of container
+    const containerHeight = $messages.scrollHeight
+
+    //  far  i scrolled
+    const scrolloffSet = $messages.scrollTop + visibleHeight
+
+    if (containerHeight - newMessageHeight <= scrolloffSet) {
+        $messages.scrollTop = $messages.scrollHeight
+    }
+
+
+}
+
+//when message are sent
 socket.on("message", (message) => {
     console.log(message)
-
     const html = {
         username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format('LT')
     }
-
     const markup = `
-    <p class="username" style="margin-bottom: 0px; text-transform: capitalize;">${html.username} - <span>${html.createdAt}</span></p>
-    <p class="message">${html.message}</p>
+    <div class="chat">
+    <p class="username" style="margin-bottom: 0px; text-transform: capitalize; font-size: 13px; font-weight: bold">${html.username} - <span>${html.createdAt}</span></p>
+
+    <p id="message" class=${html.username === username ? 'message' : 'newuser'} style="margin-bottom: 0px">${html.message}</p>
+    </div>
     `
     $messages.insertAdjacentHTML('beforeend', markup)
+
+
+    autoScroll()
+
 })
 
+//for showing online users
 socket.on('roomData', ({ room, users }) => {
 
     $room.innerHTML = ` <h3>${room}</h3>`

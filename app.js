@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
         if (error) {
             return callback(error)
         }
-
+        console.log(socket.connected)
         socket.join(user.room)
 
         socket.emit('message', getMessage('Admin', "Welcome"))
