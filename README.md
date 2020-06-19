@@ -16,4 +16,4 @@ Real time room based chat app using nodejs, socketio
 
 ### Screenshots
 
-![chat](https://github.com/saga608/socket-chat-app/blob/master/screenshot/chat.png)
+![chat](./screenshot/chat.png)
