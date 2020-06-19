@@ -48,7 +48,7 @@ socket.on("message", (message) => {
     }
     const markup = `
     <div class="chat">
-    <p class="username" style="margin-bottom: 0px; text-transform: capitalize; font-size: 13px; font-weight: bold">${html.username} - <span>${html.createdAt}</span></p>
+    <p class="username" style="margin-bottom: 3px; text-transform: capitalize; font-size: 13px; font-weight: bold">${html.username} - <span>${html.createdAt}</span></p>
 
     <p id="message" class=${html.username === username ? 'message' : 'newuser'} style="margin-bottom: 0px">${html.message}</p>
     </div>
