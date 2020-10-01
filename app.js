@@ -67,7 +67,6 @@ io.on("connection", (socket) => {
   //on disconnect
   socket.on("disconnect", () => {
     const user = removeUser(socket.id);
-    console.log(user);
     if (user) {
       socket
         .to(user.room)
