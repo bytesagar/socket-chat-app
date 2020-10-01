@@ -6,9 +6,8 @@ form {
   background-color: #1878f3;
   color: white;
   padding: 10px;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  border-bottom-left-radius: 20px;
+  border-radius: 15px 0px 15px 15px;
+  text-align: right;
 }
 
 .newuser {
@@ -18,10 +17,13 @@ form {
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
+  text-align: left;
 }
 
 .chat {
   margin-top: 5px;
+  display: flex;
+  flex-direction: column;
 }
 .roomData {
   margin-top: 10px;
@@ -39,6 +41,8 @@ form {
   padding: 10px;
   overflow: scroll;
   margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
 }
 #messages::-webkit-scrollbar {
   color: rgb(73, 243, 217);
