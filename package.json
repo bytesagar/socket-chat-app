@@ -18,5 +18,8 @@
     "express-session": "^1.17.1",
     "mongoose": "^5.9.15",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }
