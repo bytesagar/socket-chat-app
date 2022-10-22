@@ -6,5 +6,16 @@ const getMessage = (username, text) => {
     }
 }
 
-
-module.exports = getMessage 
+function locationGenerator(username,coords){
+    return{
+      username,
+      lat:coords.lat,
+      lon:coords.lon,
+      time: new Date().getTime()
+    }
+  }
+  
+  module.exports = {
+    locationGenerator,
+    getMessage
+  };

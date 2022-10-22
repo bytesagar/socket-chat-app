@@ -1,7 +1,9 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
-const getMessage = require("./utils/messages");
+const getMessage = require("./utils/messages").getMessage;
+const locationGenerator=require("./utils/messages").locationGenerator;
+
 const {
   addUser,
   removeUser,
@@ -64,6 +66,11 @@ io.on("connection", (socket) => {
   // socket.on('typing', data => {
   //     socket.broadcast.emit('typing', data)
   // })
+  socket.on('sendLocationInfos',(coords) => {
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit("locationMessage", locationGenerator(user.username,coords))
+  })
 
   //on disconnect
   socket.on("disconnect", () => {
@@ -73,7 +80,7 @@ io.on("connection", (socket) => {
         .to(user.room)
         .emit(
           "notification",
-          getMessage("Admin", `${user.username} left the room!`)
+          getMessage("Admin", `${user.username} has left the room!`)
         );
       io.to(user.room).emit("roomData", {
         room: user.room,
@@ -81,7 +88,7 @@ io.on("connection", (socket) => {
       });
       io.to(user.room).emit(
         "message",
-        getMessage("Admin", `${user.username} has left!`)
+        getMessage("Admin", `${user.username} has left the room!`)
       );
     }
   });

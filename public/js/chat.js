@@ -7,7 +7,8 @@ const $messageFormButton = document.querySelector("#message-form button");
 const $messages = document.querySelector("#messages");
 const $room = document.querySelector(".roomname");
 const $users = document.querySelector(".users");
-$typing = document.querySelector("#feedback");
+const $typing = document.querySelector("#feedback");
+const $locationBtn = document.getElementById('location-btn');
 
 //options
 
@@ -74,6 +75,7 @@ socket.on("roomData", ({ room, users }) => {
   });
   $users.innerHTML = html;
 });
+
 $messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -106,6 +108,32 @@ $messageForm.addEventListener("submit", (e) => {
 
 // });
 
+$locationBtn.addEventListener('submit',(e)=>{
+  if(!navigator.geolocation){
+    return alert('Geolocation is not supported in your browser')
+  }else{
+    navigator.geolocation.getCurrentPosition(function(position){
+      socket.emit('sendLocationInfos',{
+        username:username,
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+      }) 
+    },function(){
+      alert("Unable to get location.")
+    })
+  };
+  e.preventDefault()
+  $messageFormInput.focus();
+
+})
+
+//Locaation message
+socket.on('locationMessage',(message)=>{
+  outputLocationMessage(message)
+})
+
+
+
 socket.emit("join", { username, room }, (error) => {
   if (error) {
     alert(error);
@@ -123,3 +151,32 @@ socket.on("notification", (message) => {
     },
   });
 });
+
+// Location message to DOM
+function outputLocationMessage(message){
+  console.log(message);
+  const html = {
+    username: message.username,
+    lat: message.lat,
+    lon: message.lon,
+    createdAt: moment(message.createdAt).format("LT"),
+  };
+  const markup = `
+    <div style="${
+      html.username === username
+        ? "align-self: flex-end;align-items: flex-end"
+        : "align-self: flex-start;align-items: flex-start"
+    }" class="chat">
+    <p class="username" style="margin-bottom: 3px; text-transform: capitalize; font-size: 13px; font-weight: bold">${
+      html.username
+    } - <span>${html.createdAt}</span></p>
+    <p id="message" class=${
+      html.username === username ? "message" : "newuser"
+    } style="margin-bottom: 0px"><a href="https://google.com/maps?q=${message.lat},${message.lon}"><span style="color:#ffffff">Click to find my location</span></a></p>
+    </div>
+    `;
+
+  $messages.insertAdjacentHTML("beforeend", markup);
+
+  autoScroll();
+}
