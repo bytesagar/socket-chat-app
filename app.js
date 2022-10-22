@@ -37,7 +37,7 @@ io.on("connection", (socket) => {
     console.log(socket.connected);
     socket.join(user.room);
 
-    socket.emit("message", getMessage("Admin", "Welcome"));
+    socket.emit("message", getMessage("Admin", `Welcome to the chat room ${user.room}`));
 
     socket.broadcast
       .to(user.room)
@@ -52,6 +52,7 @@ io.on("connection", (socket) => {
     });
     callback();
   });
+
   //receive message
   socket.on("send-message", (message, callback) => {
     const user = getUser(socket.id);
@@ -87,6 +88,5 @@ io.on("connection", (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log("Server started");
-});
+
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
