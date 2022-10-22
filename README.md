@@ -1,6 +1,11 @@
 # NodeJs & Socket Chat App
 
-Real time room based chat app using nodejs, socketio
+### Libraries Used
+
+- Express
+- NodeJs
+- Socket.io
+- bootstrap 
 
 ---
 
@@ -10,7 +15,7 @@ Real time room based chat app using nodejs, socketio
 - cd socket-chat-app
 - `npm install`
 - `npm run dev`
-  > The project will start on localhost:3000
+- The project will start on [localhost:3000](localhost:3000) or [http://127.0.0.1:3000](http://127.0.0.1:3000)
 
 ---
 
